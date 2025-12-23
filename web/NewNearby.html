@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nearby Garages</title>
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    body { font-family: 'Roboto', sans-serif; background-color: #f8f9fa; }
+    #map { height: 500px; border-radius: 10px; }
+    .card:hover { transform: scale(1.02); transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer; }
+    .garage-card { margin-bottom: 15px; }
+    .card-title { font-weight: bold; }
+    .leaflet-container { border-radius: 10px; }
+  </style>
+</head>
+<body>
+   
+<section>
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Nearby Trusted Garages</h2>
+  
+  <div class="row">
+    <!-- Garage List -->
+    <div class="col-md-5" id="garageList"></div>
+
+    <!-- gap -->
+    <div class="col-md-1"></div>
+    <!-- Map -->
+    <div class=" col-md-5 ">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  let map;
+  let userMarker;
+  let garageMarkers = [];
+  
+  // Sample garage data (replace with fetch from API)
+  const garages = [
+    {name: "QuickFix Garage", lat: 19.9975, lng: 73.7898, rating: 4.5, services: "Engine, Tires", distance: 2.1},
+    {name: "AutoCare Center", lat: 20.0020, lng: 73.7850, rating: 4.7, services: "Battery, AC", distance: 3.8},
+    {name: "Speedy Motors", lat: 19.9950, lng: 73.7905, rating: 4.3, services: "Oil Change, Tires", distance: 1.5}
+  ];
+
+  function renderGarageList() {
+    const listDiv = document.getElementById('garageList');
+    listDiv.innerHTML = '';
+    garages.forEach((garage, index) => {
+      const card = document.createElement('div');
+      card.className = 'card garage-card';
+      card.innerHTML = `
+        <div class="card-body">
+          <h5 class="card-title">${garage.name}</h5>
+          <p class="card-text">${garage.distance} km away | ⭐ ${garage.rating} | Services: ${garage.services}</p>
+          <button class="btn btn-primary btn-sm">Book Now</button>
+        </div>`;
+      card.addEventListener('click', () => focusGarage(index));
+      listDiv.appendChild(card);
+    });
+  }
+
+  function initMap() {
+    // Initialize map centered on India (fallback)
+    map = L.map('map').setView([19.9975, 73.7898], 13);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add garage markers
+    garages.forEach((garage, index) => {
+      const marker = L.marker([garage.lat, garage.lng]).addTo(map)
+        .bindPopup(`<b>${garage.name}</b><br>⭐ ${garage.rating} <br>Services: ${garage.services}`);
+      garageMarkers.push(marker);
+
+      marker.on('click', () => {
+        document.querySelectorAll('.garage-card')[index].scrollIntoView({behavior: 'smooth'});
+      });
+    });
+
+    // Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const userLoc = [position.coords.latitude, position.coords.longitude];
+        userMarker = L.marker(userLoc, {icon: L.icon({iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', iconSize:[32,32]})})
+          .addTo(map)
+          .bindPopup("You are here")
+          .openPopup();
+        map.setView(userLoc, 14);
+      });
+    }
+
+    renderGarageList();
+  }
+
+  window.onload = initMap;
+
+  // Focus map on garage when card clicked
+  function focusGarage(index) {
+    const garage = garages[index];
+    map.setView([garage.lat, garage.lng], 16);
+    garageMarkers[index].openPopup();
+  }
+</script>
+
+</body>
+</html>

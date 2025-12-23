@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Digital Garage Solution -Garage Registaration</title>
+
+
+    <script>
+        // location js 
+        function getCurrentAddress() {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async function (position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    // Reverse geocoding using OpenStreetMap
+                    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+
+                        document.getElementById("address").value = data.display_name;
+                    } catch (error) {
+                        alert("Unable to fetch address");
+                    }
+                },
+                function () {
+                    alert("Permission denied or location unavailable");
+                }
+            );
+        }
+
+        // vechial check box select 
+        function getSelected() {
+            let selected = [];
+            document.querySelectorAll('input[name="services[]"]:checked')
+                .forEach(cb => selected.push(cb.value));
+
+            alert(selected.join(", "));
+        }
+
+      
+document.getElementById("garageForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    // BASIC VALUES
+    const data = {
+        garageName: document.getElementById("garageName").value.trim(),
+        ownerName: document.getElementById("ownerName").value.trim(),
+        ownerEmail: document.getElementById("ownerEmail").value.trim(),
+        primaryContact: document.getElementById("primaryContact").value.trim(),
+        alternateContact: document.getElementById("alternateContact")?.value.trim() || "",
+        state: document.getElementById("state").value.trim(),
+        district: document.getElementById("district").value.trim(),
+        city: document.getElementById("city").value.trim(),
+        address: document.getElementById("address").value.trim(),
+        openingTime: document.getElementById("openingTime").value,
+        closingTime: document.getElementById("closingTime").value,
+        vehicles: [],
+        services: [],
+        workingTypes: []
+    };
+
+    // CHECKBOX VALUES
+    document.querySelectorAll('input[name="vehicle[]"]:checked')
+        .forEach(cb => data.vehicles.push(cb.value));
+
+    document.querySelectorAll('input[name="service[]"]:checked')
+        .forEach(cb => data.services.push(cb.value));
+
+    document.querySelectorAll('input[name="workingType[]"]:checked')
+        .forEach(cb => data.workingTypes.push(cb.value));
+
+    // BASIC VALIDATION
+    if (!data.garageName || !data.ownerName || !data.primaryContact) {
+        alert("Please fill all required fields");
+        return;
+    }
+
+    if (data.vehicles.length === 0 || data.services.length === 0) {
+        alert("Select at least one vehicle and one service");
+        return;
+    }
+
+    if (data.openingTime >= data.closingTime) {
+        alert("Closing time must be later than opening time");
+        return;
+    }
+
+    try {
+        const response = await fetch("https://localhost:7076/api/garage/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error(err);
+        }
+
+        const result = await response.json();
+        alert("Garage registered successfully!");
+
+        console.log("API Response:", result);
+
+        // OPTIONAL
+        document.getElementById("garageForm").reset();
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Registration failed. Please try again.");
+    }
+});
+</script>
+
+   
+</head>
+
+<body>
+    <div class="container-sm ">
+        <div class="card shadow-lg justify-content-center round-3 mt-4">
+            <div class="card-title row m-2 justify-content-center bg-light">
+                <h3 class="col-8 fw-bold text-center text-success">Garage Registaration</h3>
+            </div>
+            <div class="card-body ">
+                 <form id="garageForm">
+
+                        <!-- BASIC GARAGE INFO -->
+                        <h5 class="text-success fw-bold mb-3">Garage Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Garage Name *</label>
+                                <input type="text" class="form-control" id="garageName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Owner Name *</label>
+                                <input type="text" class="form-control" id="ownerName" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Owner Email</label>
+                                <input type="email" class="form-control" id="ownerEmail">
+                            </div>
+                        </div>
+
+                        <!-- CONTACT -->
+                        <h5 class="text-success fw-bold mt-4 mb-3">Contact Details</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Primary Contact *</label>
+                                <input type="tel" class="form-control" id="primaryContact" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Alternate Contact</label>
+                                <input type="tel" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- ADDRESS -->
+                        <h5 class="text-success fw-bold mt-4 mb-3">Garage Address</h5>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">State *</label>
+                                <input type="text" class="form-control" id="state" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">District *</label>
+                                <input type="text" class="form-control"  id="district" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">City *</label>
+                                <input type="text" class="form-control" id="city" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Full Address *</label>
+                                <textarea id="address" class="form-control" id="address" rows="3" required></textarea>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2"
+                                    onclick="getCurrentAddress()">📍 Get Current Address</button>
+                            </div>
+                        </div>
+
+                        <!-- VEHICLE TYPES -->
+                        <h5 class="text-success fw-bold mt-4 mb-3">Vehicle Types Supported</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vehicle[]" value="Bike">
+                                    <label class="form-check-label">Bike</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vehicle[]" value="E-Bike">
+                                    <label class="form-check-label">E-Bike</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vehicle[]" value="Car">
+                                    <label class="form-check-label">Car</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SERVICES -->
+                        <h5 class="text-success fw-bold mt-4 mb-3">Services Offered</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="service[]"
+                                        value="General Repair">
+                                    <label class="form-check-label">General Repair</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="service[]"
+                                        value="Modification">
+                                    <label class="form-check-label">Modification</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="service[]"
+                                        value="Tyre Service">
+                                    <label class="form-check-label">Tyre Service</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WORKING TYPE -->
+                        <h5 class="text-success fw-bold mt-4 mb-3">Working Type</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Center Only" name="workingType[]">
+                                    <label class="form-check-label">Center Only</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Home Service" name="workingType[]">
+                                    <label class="form-check-label">Home Service</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Emergency Roadside" name="workingType[]">
+                                    <label class="form-check-label">Emergency Roadside Assistance</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WORKING HOURS -->
+                        <h5 class="text-success fw-bold mt-4 mb-3">Working Hours</h5>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Opening Time *</label>
+                                <input type="time" class="form-control"  id="openingTime" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Closing Time *</label>
+                                <input type="time" class="form-control" id="closingTime" required>
+                            </div>
+                        </div>
+
+                        <!-- SUBMIT -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success px-5" id="btnSubmitGarage">Register Garage</button>
+                        </div>
+
+                    </form>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
