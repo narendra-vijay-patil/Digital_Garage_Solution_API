@@ -1,0 +1,192 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Home Mechanic | E-Garage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-primary fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">E-Garage</a>
+  </div>
+</nav>
+
+<section class="bg-dark text-white text-center py-5 mt-5">
+  <h1 class="fw-bold">Home Mechanic</h1>
+  <p class="lead">Mechanic at your doorstep</p>
+   <a href="index.html#services" class="btn btn-warning mt-3" id="backBtn">← Back to Home</a>
+</section>
+
+<section class="py-5" style="background-color:  rgb(245, 224, 197);">
+<div class="container">
+<div class="row g-4">
+
+<div class="col-md-6">
+  <div class="card shadow">
+    <div class="card-body">
+      <h5>Emergency Breakdown</h5>
+      <p>Battery jump-start, tyre puncture</p>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="card shadow">
+    <div class="card-body">
+      <h5>Home Repair</h5>
+      <p>Minor repairs at your location</p>
+    </div>
+  </div>
+</div>
+
+</div>
+<!-- ================= HOME MECHANIC BOOKING FORM ================= -->
+<section id="book-home-mechanic" class="py-5 bg-light" style="background-color: rgb(245, 224, 197);">
+  <div class="container" style="background-color: rgb(193, 230, 230);">
+    <h2 class="fw-bold text-center mb-5">Request a Home Mechanic</h2>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="card shadow-lg p-4 border-0" style="background-color: rgb(145, 206, 206);">
+          <h5 class="fw-bold mb-4 text-center text-success">Home Mechanic Booking</h5>
+
+          <form id="homeMechanicForm">
+
+            <!-- Name -->
+            <div class="form-floating mb-3 position-relative">
+              <input type="text" id="name" class="form-control" placeholder="Full Name" required>
+              <label for="name"><i class="bi bi-person-fill me-2"></i>Full Name</label>
+            </div>
+
+            <!-- Address -->
+            <div class="form-floating mb-3">
+              <input type="text" id="address" class="form-control" placeholder="Your Address" required>
+              <label for="address"><i class="bi bi-geo-alt-fill me-2"></i>Address</label>
+            </div>
+
+            <!-- Date -->
+            <div class="form-floating mb-3">
+              <input type="date" id="date" class="form-control" required>
+              <label for="date"><i class="bi bi-calendar-fill me-2"></i>Select Date</label>
+            </div>
+
+            <!-- Vehicle Type -->
+            <div class="form-floating mb-3">
+              <select id="vehicleType" class="form-select" required>
+                <option value="">Select Vehicle Type</option>
+                <option>Car</option>
+                <option>Bike</option>
+                <option>Van / SUV</option>
+              </select>
+              <label for="vehicleType"><i class="bi bi-car-front-fill me-2"></i>Vehicle Type</label>
+            </div>
+
+            <!-- Select Garage -->
+            <div class="form-floating mb-3">
+              <select id="garage" class="form-select" required>
+                <option value="">Select Garage</option>
+                <option>Downtown Garage</option>
+                <option>City Motors</option>
+                <option>Premium Auto Care</option>
+              </select>
+              <label for="garage"><i class="bi bi-building me-2"></i>Select Garage</label>
+            </div>
+
+            <!-- Services Home Mechanic Can Handle -->
+            <div class="form-floating mb-3">
+              <select id="serviceType" class="form-select" required>
+                <option value="">Select Service</option>
+                <option>Battery Jump-start</option>
+                <option>Tyre Puncture Repair</option>
+                <option>Oil Top-up</option>
+                <option>Brake Check</option>
+                <option>Minor Electrical Fix</option>
+              </select>
+              <label for="serviceType"><i class="bi bi-wrench me-2"></i>Service</label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-success w-100 py-2 fw-bold text-white" onclick="bookHomeMechanic()">Request Mechanic</button>
+
+            <!-- Confirmation Message -->
+            <p id="homeBookingMessage" class="mt-3 text-center fw-bold"></p>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+  const homeForm = document.getElementById('homeMechanicForm');
+  const homeMsg = document.getElementById('homeBookingMessage');
+
+  homeForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const address = document.getElementById('address').value;
+    const date = document.getElementById('date').value;
+    const vehicle = document.getElementById('vehicleType').value;
+    const garage = document.getElementById('garage').value;
+    const service = document.getElementById('serviceType').value;
+
+    if(name && address && date && vehicle && garage && service){
+      // Simulate mechanic allocation time (random 1-3 hours)
+      const allocatedHour = Math.floor(Math.random() * 3) + 1;
+      homeMsg.innerHTML = `Thank you <strong>${name}</strong>!<br>
+        Your <strong>${service}</strong> will be handled at <strong>${address}</strong>.<br>
+        Assigned mechanic will arrive on <strong>${date}</strong> within <strong>${allocatedHour} hour(s)</strong>.`;
+      homeMsg.classList.remove('text-danger');
+      homeMsg.classList.add('text-success');
+      homeForm.reset();
+    } else {
+      homeMsg.innerText = 'Please fill all fields.';
+      homeMsg.classList.remove('text-success');
+      homeMsg.classList.add('text-danger');
+    }
+  });
+  async function bookHomeMechanic() {
+    const data = {
+        Name: document.getElementById("name").value,
+        Address: document.getElementById("address").value,
+        ScheduledDate: document.getElementById("date").value,
+        VehicleType: document.getElementById("vehicleType").value,
+        Garage: document.getElementById("garage").value,
+        ServiceType: document.getElementById("serviceType").value
+    };
+
+    try {
+        const response = await fetch("http://localhost:5032/api/homemechanic/bookmechanic", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error("Booking failed");
+        const result = await response.text();
+        alert(result);
+
+        document.getElementById("homeMechanicForm").reset(); // reset form
+    } catch (err) {
+        console.error("Home Mechanic booking error:", err);
+        alert("Booking failed. Please try again.");
+    }
+}
+
+</script>
+
+
+<footer class="bg-primary text-white text-center py-3">
+© 2025 E-Garage
+</footer>
+
+
+</body>
+</html>

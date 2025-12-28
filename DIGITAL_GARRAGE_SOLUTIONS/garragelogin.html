@@ -1,0 +1,109 @@
+//   function register() {
+//     const name = regName.value;
+//     const username = regUsername.value;
+//     const email = regEmail.value;
+//     const password = regPassword.value;
+
+//     if (!name || !username || !email || !password) {
+//       registerMsg.innerText = "All fields required";
+//       return;
+//     }
+
+//     localStorage.setItem("user", JSON.stringify({
+//       name, username, email, password
+//     }));
+//     alert("Registration successful! Please login.");
+//     showLogin();
+//   }
+//   function loginSuccess() {
+//   document.getElementById("authOverlay").style.display = "none";
+// }
+  // function login() {
+  //   const username = loginUsername.value;
+  //   const password = loginPassword.value;
+
+  //   const user = JSON.parse(localStorage.getItem("user"));
+
+  //   if (!user)
+  //    {  loginMsg.innerText = "Please register first";
+  //     return;
+  //   }
+
+  //   if (user.username === username && user.password === password) {
+  //     localStorage.setItem("loggedIn", "true");
+  //     document.getElementById("authOverlay").style.display = "none";
+  //   } else {
+  //     loginMsg.innerText = "Invalid credentials";
+  //   }
+  // }
+//  REGISTER (API)
+
+//  async function register() {
+//  const name = document.getElementById("regName").value;
+//  const username = document.getElementById("regUsername").value;
+//  const email = document.getElementById("regEmail").value;
+//  const password = document.getElementById("regPassword").value;
+
+//  console.log("REGISTER:", name, username, email, password);
+
+//   const response = await fetch("http://localhost:5032/api/login/register", {
+//    method: "POST",
+//    headers: { "Content-Type": "application/json" },
+//    body: JSON.stringify({ name, username, email, password })
+//  });
+
+//  const msg = await response.text();
+//  alert(msg);
+//  showLogin();
+// }
+// LOGIN (API)
+// async function login() {
+//  const username = document.getElementById("loginUsername").value;
+//  const password = document.getElementById("loginPassword").value;
+
+//  console.log("LOGIN:", username, password);
+
+//  const response = await fetch("http://localhost:5032/api/login/login", {
+//    method: "POST",
+//    headers: { "Content-Type": "application/json" },
+//    body: JSON.stringify({ username, password })
+//  });
+
+//  if (!response.ok) {
+//    loginMsg.innerText = "Invalid username or password";
+//    return;
+//  }
+
+//  sessionStorage.setItem("loggedIn", "true");
+//   loginSuccess();
+// }
+// async function loginUser() {
+//   const data = {
+//     username: document.getElementById("loginUsername").value,
+//     password: document.getElementById("loginPassword").value
+//   };
+
+//   console.log("LOGIN DATA:", data);
+
+//   try {
+//     const response = await fetch("http://localhost:5032/api/login/login", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(data)
+//     });
+
+//     if (!response.ok) {
+//       document.getElementById("loginMsg").innerText = "Invalid username or password";
+//       return;
+//     }
+
+//     const user = await response.json();
+//     console.log("LOGIN SUCCESS:", user);
+
+//     sessionStorage.setItem("loggedIn", "true");
+//     document.getElementById("authOverlay").style.display = "none";
+
+//   } catch (err) {
+//     console.error("Login error:", err);
+//   }
+// }

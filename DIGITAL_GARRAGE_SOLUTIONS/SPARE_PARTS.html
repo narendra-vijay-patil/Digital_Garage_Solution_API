@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spare Parts Shop | E-Garage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  .product-card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">E-Garage</a>
+
+    <div class="ms-auto">
+      <button class="btn btn-light position-relative">
+        🛒 Cart
+        <span id="cartCount"
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          0
+        </span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= SHOP ================= -->
+<div class="container py-5">
+  <div class="row">
+
+    <!-- PRODUCTS -->
+    <div class="col-md-8">
+      <h3 class="fw-bold mb-3">Spare Parts Shop</h3>
+
+      <!-- Search -->
+      <input type="text" id="searchInput" class="form-control mb-4"
+        placeholder="Search spare parts..." onkeyup="searchProducts()">
+
+      <div class="row g-4" id="productList">
+
+        <!-- Product -->
+        <div class="col-md-4 product">
+          <div class="card product-card h-100 shadow-sm">
+            <img src="https://via.placeholder.com/200" class="card-img-top">
+            <div class="card-body text-center">
+              <h6 class="product-name">Engine Oil</h6>
+              <p class="fw-bold">₹800</p>
+              <button class="btn btn-primary btn-sm"
+                onclick="addToCart('Engine Oil',800)">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 product">
+          <div class="card product-card h-100 shadow-sm">
+            <img src="https://via.placeholder.com/200" class="card-img-top">
+            <div class="card-body text-center">
+              <h6 class="product-name">Brake Pads</h6>
+              <p class="fw-bold">₹1200</p>
+              <button class="btn btn-primary btn-sm"
+                onclick="addToCart('Brake Pads',1200)">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 product">
+          <div class="card product-card h-100 shadow-sm">
+            <img src="https://via.placeholder.com/200" class="card-img-top">
+            <div class="card-body text-center">
+              <h6 class="product-name">Car Battery</h6>
+              <p class="fw-bold">₹4500</p>
+              <button class="btn btn-primary btn-sm"
+                onclick="addToCart('Car Battery',4500)">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CART -->
+    <div class="col-md-4">
+      <div class="card shadow-lg">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">🛒 Your Cart</h5>
+
+          <ul id="cartItems" class="list-group mb-3"></ul>
+
+          <h6>Total: ₹<span id="totalAmount">0</span></h6>
+
+          <button class="btn btn-success w-100 mt-3" onclick="checkout()">
+            Buy Now
+          </button>
+
+          <p id="cartMessage" class="mt-3 text-center fw-bold"></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+  let cart = [];
+
+  function addToCart(name, price) {
+    const item = cart.find(i => i.name === name);
+    if (item) {
+      item.qty++;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    renderCart();
+  }
+
+  function renderCart() {
+    const cartList = document.getElementById("cartItems");
+    cartList.innerHTML = "";
+    let total = 0;
+    let count = 0;
+
+    cart.forEach((item, index) => {
+      total += item.price * item.qty;
+      count += item.qty;
+
+      cartList.innerHTML += `
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <strong>${item.name}</strong>
+            ₹${item.price * item.qty}
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <div>
+              <button class="btn btn-sm btn-secondary"
+                onclick="changeQty(${index},-1)">−</button>
+              <span class="mx-2">${item.qty}</span>
+              <button class="btn btn-sm btn-secondary"
+                onclick="changeQty(${index},1)">+</button>
+            </div>
+            <button class="btn btn-sm btn-danger"
+              onclick="removeItem(${index})">Remove</button>
+          </div>
+        </li>
+      `;
+    });
+
+    document.getElementById("totalAmount").innerText = total;
+    document.getElementById("cartCount").innerText = count;
+  }
+
+  function changeQty(index, change) {
+    cart[index].qty += change;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
+    renderCart();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  function checkout() {
+    if (cart.length === 0) {
+      showMessage("Your cart is empty!", "danger");
+      return;
+    }
+    showMessage("🎉 Purchase Successful! Thank you for shopping.", "success");
+    cart = [];
+    renderCart();
+  }
+
+  function showMessage(msg, type) {
+    const el = document.getElementById("cartMessage");
+    el.innerText = msg;
+    el.className = `text-${type} fw-bold text-center`;
+  }
+
+  function searchProducts() {
+    const value = document.getElementById("searchInput").value.toLowerCase();
+    document.querySelectorAll(".product").forEach(p => {
+      const name = p.querySelector(".product-name").innerText.toLowerCase();
+      p.style.display = name.includes(value) ? "block" : "none";
+    });
+  }
+</script>
+
+</body>
+</html>

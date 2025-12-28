@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>E-Garage | Digital Garage Solution</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.auth-card {
+  width: 350px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+        .bg-service-highlights {
+    background-color: #f8f9fa;
+}
+        #reviews .card:hover {
+            transform: translateY(-5px);
+            transition: 0.3s;
+        }
+
+        /* this is the animation to that last part of the html */
+
+        .card {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+        }
+        .profile-panel {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 380px;
+  height: 100%;
+  background: #f8f9fa;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.4);
+  z-index: 10000;
+  transition: right 0.45s ease;
+}
+
+.profile-panel.active {
+  right: 0;
+}
+
+/* Header */
+.profile-header {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+}
+
+.profile-avatar {
+  width: 55px;
+  height: 55px;
+  background: white;
+  color: #007bff;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  cursor: pointer;
+  font-size: 18px;
+  color: white;
+}
+
+/* Body */
+.profile-body {
+  padding: 25px;
+}
+
+.profile-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-bottom: 15px;
+}
+
+.profile-card label {
+  font-size: 12px;
+  color: gray;
+}
+
+.profile-card p {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+    </style>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- ================= LOGIN / REGISTER OVERLAY ================= -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+
+    <!-- LOGIN FORM -->
+    <div id="loginBox">
+      <h4 class="text-center mb-3">Login</h4>
+
+      <input type="text" id="loginUsername" class="form-control mb-2" placeholder="Username">
+      <input type="password" id="loginPassword" class="form-control mb-2" placeholder="Password">
+
+      <!--<button type="button" class="btn btn-primary w-100" onclick="loginUser()">Login</button>-->
+      <!--<button class="btn btn-primary w-100" onclick="loginUser()">Login</button>-->
+      <button type="button" class="btn btn-primary w-100" onclick="loginUser()">Login</button>
+      <p id="loginMsg" class="text-danger text-center mt-2"></p>
+
+      <p class="text-center mt-3">
+        New user?
+        <a href="#" onclick="showRegister()">Register here</a>
+      </p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerBox" style="display:none;">
+      <h4 class="text-center mb-3">Register</h4>
+
+      <input type="text" id="regName" class="form-control mb-2" placeholder="Full Name">
+      <input type="text" id="regUsername" class="form-control mb-2" placeholder="Username">
+      <input type="email" id="regEmail" class="form-control mb-2" placeholder="Email">
+      <input type="password" id="regPassword" class="form-control mb-2" placeholder="Password">
+
+      <!--<button type="button" class="btn btn-success w-100" onclick="register()">Register</button>-->
+      <button class="btn btn-success w-100" onclick="registerUser()">Register</button>
+
+
+      <p id="registerMsg" class="text-danger text-center mt-2"></p>
+
+      <p class="text-center mt-3">
+        Already registered?
+        <a href="#" onclick="showLogin()">Login here</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">E-Garage</a>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+                    <li class="nav-item"><a href="CAR_SERVICING.html" class="nav-link">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="SPARE_PARTS.html">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ContactUs.html">Contact</a></li>
+                   <li class="nav-item"><a class="nav-link" href="#" onclick="openProfile()">👤 Profile</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= HERO ================= -->
+    <section id="home" class="bg-dark text-light text-center py-5 mt-5">
+        <div class="container">
+            <h1 class="display-5 fw-bold">Welcome to E-Garage</h1>
+            <p class="lead mt-3">
+                Your one-stop solution for car servicing, spare parts, and home garage services.
+            </p>
+            <a href="#services" class="btn btn-warning btn-lg mt-3">Explore Services</a>
+        </div>
+    </section>
+
+    <section class="">
+        <div class="container-fluid py-5 " style="background-color: rgb(148, 229, 202);">
+            <div class="row justify-content-center align-items-center ">
+                <div class="col-md-4">
+                    <div class="card shadow-lg border-0 position-relative bg-light " style="z-index: 2;">
+                        
+                           
+                        <div class="card-body ">
+                             <h5 class="fw-bold card-title">Trusted Garages</h5>
+                            <p class="card-text mt-1">Get Trusted & verified centers</p>
+                             <button class="btn btn-primary btn-sm mt-3">Explore</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="mt-4 ps-md-5 ">
+                        <h2 class="fw-bold text-muted">Get Nearby Trusted Garage</h2>
+                        <p class="text-muted">E-Garage helps you discover verified and trusted garages near
+                            your location within seconds. We connect vehicle owners with
+                            service partners who are quality-checked, customer-rated,
+                            and professionally managed, ensuring reliable service
+                            every time you Explore.
+                        </p>
+                        <ul class="list-unstyled text-muted">
+                            <li>✔ Nearby garages based on real-time location</li>
+                            <li>✔ Verified & quality-checked service partners</li>
+                            <li>✔ Genuine spare parts & skilled mechanics</li>
+                            <li>✔ Transparent pricing with no hidden charges</li>
+                            <li>✔ Customer ratings & reviews you can trust</li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+     <!-- ================= SERVICE HIGHLIGHTS ================= -->
+<section class=".bg-service-highlights" style="background-color:#c2d2e3;"  >
+    <div class="container py-5">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How E-Garage Helps You</h2>
+            <p class="text-muted">
+                Smart, reliable and doorstep automotive solutions designed for your convenience.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Highlight 1 -->
+            <div class="col-md-4">
+                <div class="card shadow h-100 border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3 fs-1 text-primary">🚗</div>
+                        <h5 class="fw-bold">Easy Garage Booking</h5>
+                        <p class="text-muted">
+                            Find nearby trusted garages and book car servicing appointments
+                            quickly without long waiting times.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlight 2 -->
+            <div class="col-md-4">
+                <div class="card shadow h-100 border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3 fs-1 text-success">🛠️</div>
+                        <h5 class="fw-bold">Doorstep Mechanic</h5>
+                        <p class="text-muted">
+                            Get professional mechanics at your home for emergency breakdowns,
+                            minor repairs and quick fixes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlight 3 -->
+            <div class="col-md-4">
+                <div class="card shadow h-100 border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3 fs-1 text-warning">🛒</div>
+                        <h5 class="fw-bold">Genuine Spare Parts</h5>
+                        <p class="text-muted">
+                            Buy quality-tested and genuine spare parts directly from
+                            verified garages at fair prices.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    <!-- ================= SERVICES ================= -->
+    <!-- ================= SERVICES ================= -->
+
+<!-- CAR SERVICING -->
+<section class="">
+  <div class="container-fluid py-5 bg-light" style="background-color: #60a4b5">
+    <div class="row justify-content-center align-items-center">
+
+      <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+          <div class="card-body">
+            <h5 class="fw-bold">Car Servicing</h5>
+            <p class="text-muted">Complete vehicle maintenance</p>
+            <a href="CAR_SERVICING.html" class="btn btn-primary btn-sm">Explore</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mt-4 mt-md-0">
+        <h2 class="fw-bold text-muted">Reliable Car Servicing</h2>
+        <p class="text-muted">
+          E-Garage connects you with trusted garages for regular servicing,
+          engine checkups, oil changes, brake inspection and complete car care.
+        </p>
+
+        <ul class="list-unstyled text-muted">
+          <li>✔ Periodic & full servicing</li>
+          <li>✔ Genuine spare parts usage</li>
+          <li>✔ Transparent pricing</li>
+          <li>✔ Skilled & verified mechanics</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- HOME MECHANIC -->
+<section class="">
+  <div class="container-fluid py-5" style="background-color: #f9fff5">
+    <div class="row justify-content-center align-items-center">
+
+      <div class="col-md-6">
+        <h2 class="fw-bold text-muted">Home Mechanic Service</h2>
+        <p class="text-muted">
+          Get professional mechanic support at your doorstep for breakdowns,
+          emergency repairs and minor fixes without visiting a garage.
+        </p>
+
+        <ul class="list-unstyled text-muted">
+          <li>✔ Emergency breakdown support</li>
+          <li>✔ Battery jump-start & puncture repair</li>
+          <li>✔ Time-saving doorstep service</li>
+          <li>✔ Affordable pricing</li>
+        </ul>
+      </div>
+
+      <div class="col-md-4 mt-4 mt-md-0">
+        <div class="card shadow-lg border-0">
+          <div class="card-body">
+            <h5 class="fw-bold">Home Mechanic</h5>
+            <p class="text-muted">Mechanic at your location</p>
+            <a href="HOME_MECHANIC.html" class="btn btn-success btn-sm">Request</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- SPARE PARTS -->
+<section class="">
+  <div class="container-fluid py-5 bg-light" style="background-color: #958a7a">
+    <div class="row justify-content-center align-items-center">
+
+      <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+          <div class="card-body">
+            <h5 class="fw-bold">Spare Parts Store</h5>
+            <p class="text-muted">Genuine & affordable parts</p>
+            <a href="SPARE_PARTS.html" class="btn btn-warning btn-sm">Shop Now</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mt-4 mt-md-0">
+        <h2 class="fw-bold text-muted">Buy Genuine Spare Parts</h2>
+        <p class="text-muted">
+          Purchase quality-tested spare parts directly from trusted garages
+          with assurance of authenticity and fair pricing.
+        </p>
+
+        <ul class="list-unstyled text-muted">
+          <li>✔ Genuine branded spare parts</li>
+          <li>✔ Competitive pricing</li>
+          <li>✔ Wide range of components</li>
+          <li>✔ Trusted suppliers</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- DIAGNOSTICS -->
+<section class="">
+  <div class="container-fluid py-5" style="background-color: #f7f7f7;">
+    <div class="row justify-content-center align-items-center">
+
+      <div class="col-md-6">
+        <h2 class="fw-bold text-muted">Advanced Vehicle Diagnostics</h2>
+        <p class="text-muted">
+          Detect engine, electrical and performance issues accurately
+          using modern computer-based diagnostic tools.
+        </p>
+
+        <ul class="list-unstyled text-muted">
+          <li>✔ Engine error code detection</li>
+          <li>✔ Electrical & ECU check</li>
+          <li>✔ Performance & mileage report</li>
+          <li>✔ Accurate problem diagnosis</li>
+        </ul>
+      </div>
+
+      <div class="col-md-4 mt-4 mt-md-0">
+        <div class="card shadow-lg border-0">
+          <div class="card-body">
+            <h5 class="fw-bold">Diagnostics</h5>
+            <p class="text-muted">Computer-based vehicle check</p>
+            <a href="DIGNOSTIC.html" class="btn btn-dark btn-sm">Book</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+    <!-- ================= REVIEWS ================= -->
+    <section id="reviews" class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Customer Reviews & Ratings</h2>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="card shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Rahul Patil</h5>
+                            <p class="card-text">"Excellent service! My car was serviced on time."</p>
+                            <div class="text-warning">★★★★☆</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Sneha Sharma</h5>
+                            <p class="card-text">"Home mechanic came on time and fixed quickly."</p>
+                            <div class="text-warning">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Amit Joshi</h5>
+                            <p class="card-text">"Genuine spare parts and fast delivery."</p>
+                            <div class="text-warning">★★★★☆</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- ================= BOOKING FORM ================= -->
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-primary text-white text-center py-3">
+        <p class="mb-0">© 2025 E-Garage | Digital Garage Solution</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+  // Check if already logged in
+  //if (localStorage.getItem("loggedIn") === "true") {
+    //document.getElementById("authOverlay").style.display = "none";
+  //}
+  window.onload = function () {
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+
+  if (isLoggedIn === "true") {
+    document.getElementById("authOverlay").style.display = "none";
+  } else {
+    document.getElementById("authOverlay").style.display = "flex";
+  }
+};
+
+  function showRegister() {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("registerBox").style.display = "block";
+  }
+
+  function showLogin() {
+    document.getElementById("registerBox").style.display = "none";
+    document.getElementById("loginBox").style.display = "block";
+  }
+   async function registerUser() {
+  const data = {
+    name: document.getElementById("regName").value,
+    username: document.getElementById("regUsername").value,
+    email: document.getElementById("regEmail").value,
+    password: document.getElementById("regPassword").value
+  };
+
+  console.log("Sending to API:", data); // 
+
+  try {
+    let response = await fetch("http://localhost:5032/api/login/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    let result = await response.text();
+    alert(result);
+    showLogin();
+
+  } catch (err) {
+    console.error("Register failed", err);
+  }
+}
+
+
+ 
+// 
+async function loginUser() {
+  let username = document.getElementById("loginUsername").value.trim();
+  let password = document.getElementById("loginPassword").value.trim();
+
+  if (!username || !password) {
+    document.getElementById("loginMsg").innerText = "Enter username and password";
+    return;
+  }
+
+  let data = { username, password };
+
+  try {
+    let response = await fetch("http://localhost:5032/api/login/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      document.getElementById("loginMsg").innerText = "Invalid username or password";
+      return;
+    }
+
+    let user = await response.json();
+
+    // ✅ FIX HERE
+    sessionStorage.setItem("isLoggedIn", "true");
+    sessionStorage.setItem("user", JSON.stringify(user));
+
+    document.getElementById("authOverlay").style.display = "none";
+
+  } catch (error) {
+    console.error("Login failed:", error);
+    document.getElementById("loginMsg").innerText = "Server not reachable";
+  }
+}
+function openProfile() {
+  const userData = sessionStorage.getItem("user");
+
+  if (!userData) {
+    alert("Please login first");
+    return;
+  }
+
+  const user = JSON.parse(userData);
+
+  document.getElementById("pName").innerText = user.name;
+  document.getElementById("pUsername").innerText = "@" + user.username;
+  document.getElementById("pEmail").innerText = user.email;
+
+  // Avatar letter
+  document.getElementById("profileAvatar").innerText =
+    user.name.charAt(0).toUpperCase();
+
+  document.getElementById("profilePanel").classList.add("active");
+}
+
+function closeProfile() {
+  document.getElementById("profilePanel").classList.remove("active");
+}
+ //REGISTER (API)
+//  REGISTER (API)
+
+//  REGISTER (API)
+</script>
+<!-- ================= USER PROFILE SLIDE ================= -->
+<!-- ================= USER PROFILE SLIDE (PRO VERSION) ================= -->
+<div id="profilePanel" class="profile-panel">
+
+  <!-- Header -->
+  <div class="profile-header">
+    <div class="profile-avatar" id="profileAvatar">U</div>
+    <div>
+      <h6 id="pName" class="mb-0 fw-bold text-white"></h6>
+      <small id="pUsername" class="text-light"></small>
+    </div>
+    <span class="close-btn" onclick="closeProfile()">✖</span>
+  </div>
+
+  <!-- Body -->
+  <div class="profile-body">
+
+    <div class="profile-card">
+      <label>Email</label>
+      <p id="pEmail"></p>
+    </div>
+
+    <div class="profile-card">
+      <label>Account Type</label>
+      <p>Customer</p>
+    </div>
+
+    <div class="profile-card">
+      <label>Status</label>
+      <p class="text-success fw-bold">Active</p>
+    </div>
+
+    <button class="btn btn-danger w-100 mt-4" onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+</div>
+
+</body>
+</html>
