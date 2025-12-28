@@ -1,31 +1,46 @@
-using Digital_Garage_Solutions_API.DBCONTEXT;
+﻿using Digital_Garage_Solutions_API.DBCONTEXT;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ================= SERVICES =================
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DataBase>(e =>
+builder.Services.AddDbContext<DataBase>(options =>
 {
-    e.UseSqlServer(builder.Configuration.GetConnectionString("constr"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("constr"));
+});
+
+// ✅ CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ================= MIDDLEWARE ORDER (VERY IMPORTANT) =================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseRouting();          // 🔥 THIS WAS MISSING
+app.UseCors("AllowAll");   // must be AFTER routing
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
